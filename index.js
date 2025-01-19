@@ -15,7 +15,6 @@ const { Client,
   require("dotenv").config();
   const TOKEN = process.env.DISCORD_TOKEN;
   const AUTHTOKEN = process.env.AUTH_TOKEN;
-  const ALT_TOKEN = process.env.ALT_TOKEN;
     
   const client = new Client({
       intents: [
@@ -85,10 +84,8 @@ setInterval(()=>{
           let cost = parseInt(embed.description.slice(60));
           if(cost < 164){
             say("$buy all", AUTHTOKEN);
-            say("$buy all", ALT_TOKEN);
           }else if(cost > 75){
             say("$sell all", AUTHTOKEN);
-            say("$sell all", ALT_TOKEN);
           }
         } 
       }
