@@ -1,8 +1,9 @@
 const referrer = "";
 const fetchURL = "";
+const minutes = 4;
 
-
-const minutes = 4.9;
+let prefix = "$";
+let commands = ["cost","work","beg","stream"];
 
 const { Client, 
     GatewayIntentBits,
@@ -15,7 +16,9 @@ const { Client,
   require("dotenv").config();
   const TOKEN = process.env.DISCORD_TOKEN;
   const AUTHTOKEN = process.env.AUTH_TOKEN;
-    
+  
+  const PREFIX = "!";
+
   const client = new Client({
       intents: [
       GatewayIntentBits.Guilds,
@@ -26,7 +29,7 @@ const { Client,
       ],
   });
 
-  function say(message,token){
+  async function say(message,token){
     fetch(fetchURL, {
       "headers": {
         "accept": "*/*",
@@ -53,7 +56,17 @@ const { Client,
       "mode": "cors",
       "credentials": "include"
     }).then((res)=>{
-      console.log(res);
+      if(res.status === 401){
+        client.channels.fetch("1288230213913673844").then((channel)=>{
+          const embed = new EmbedBuilder()
+          .setColor("DarkRed")
+          .setTitle("WARNING")
+          .setDescription("unauthorized message")
+          .setTimestamp()
+          channel.send({embeds:[embed], mentions:{everyone:true}});
+        })
+      }
+      return res;
     }).catch((err)=>{
       console.log(err);
     });
@@ -62,16 +75,19 @@ const { Client,
   client.on("ready",(status)=>{
     console.log("bot is online");
     console.log("AFK started");
-setInterval(()=>{
-    say("$cost")
-},60000*minutes);
+    for(let i in commands){
+      say(`${prefix}${commands[i]}`,AUTHTOKEN);
+    }
+    setInterval(()=>{
+      for(let i in commands){
+        say(`${prefix}${commands[i]}`,AUTHTOKEN);
+      }
+    },60000*minutes);
   })
 
   client.on("messageCreate",(message)=>{
 
     if(message.author.id === "1086321246905565214"){
-
-      console.log(message);
 
       if(message.embeds[0]){
         let embed = message.embeds[0].data;
@@ -89,13 +105,7 @@ setInterval(()=>{
           }
         } 
       }
-    }else{
-      return;
     }
-
-    if(message.author.bot || !message.content.startsWith(prefix))return;
-
-    
   })
 
 
